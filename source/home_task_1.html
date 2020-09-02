@@ -1,0 +1,29 @@
+<HTML>
+
+<BODY>
+
+    <canvas width='500' height='500' id='lab01'>Some text</canvas>
+
+    <script>
+
+        var canvas = document.getElementById('lab01');
+        var ctx = canvas.getContext('2d');
+
+        var j = 0;
+
+        setInterval(function () {
+            ctx.fillStyle = '#fefefe';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i <= 50; i++) {
+                ctx.fillRect(10 + i + j, 10 + i, 4, 4);
+            }
+
+            j += 1;
+
+        }, 50);
+    </script>
+
+</BODY>
+
+</HTML>
