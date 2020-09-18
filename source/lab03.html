@@ -1,0 +1,76 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="./css/workspace.css">
+</head>
+
+<body>
+    <h1>Lab 3. Bresenham's algorithm</h1>
+
+    <canvas width='1000' height='500' id="canv"> </canvas>
+    <script>
+        var flag = 1;
+        var x0 = 0;
+        var y0 = 0;
+        var canvas = document.getElementById('canv');
+        var ctx = canvas.getContext('2d');
+
+        function get_random_int(min, max) {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+        function draw_line(x0, y0, x1, y1) {
+            var x = x0;
+            var y = y0;
+            var move_x = 1;
+            var move_y = 1;
+
+            if (x0 > x1)
+                move_x = -1;
+            if (y0 > y1)
+                move_y = -1;
+
+            var dx = Math.abs(x1 - x0);
+            var dy = Math.abs(y1 - y0);
+            var E = dx - dy;
+
+            var pixels_number = 0;
+            if (dx > dy)
+                pixels_number = dx;
+            else
+                pixels_number = dy;
+
+            while (pixels_number > 0) {
+                pixels_number -= 1;
+                ctx.fillRect(x, y, 1, 1);
+                if (dy >= -2 * E) {
+                    x += move_x;
+                    E -= dy;
+                }
+                if (dx >= 2 * E) {
+                    y += move_y;
+                    E += dx;
+                }
+            }
+        }
+        canvas.addEventListener('click', (event) => {
+            if (flag) {
+                if (event.offsetX > 0 && event.offsetX < canvas.width)
+                    if (event.offsetY > 0 && event.offsetY < canvas.height) {
+                        x0 = event.offsetX;
+                        y0 = event.offsetY;
+                        ctx.fillStyle = 'rgb(' + get_random_int(0, 255) + ', ' + get_random_int(0, 255) + ', ' + get_random_int(0, 255) + ')';
+                        ctx.fillRect(x0, y0, 4, 4);
+                        flag = 0;
+                    }
+            }
+            else {
+                ctx.fillRect(event.offsetX, event.offsetY, 4, 4);
+                draw_line(x0, y0, event.offsetX, event.offsetY);
+                flag = 1;
+            }
+        })
+    </script>
+</body>
+
+</html>
