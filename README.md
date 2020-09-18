@@ -6,3 +6,6 @@ BMSTU labs for Computer Graphics
 
 ## Lab 2. Filtering
 ![Lab 2 work demonstration](images/lab02.gif)
+
+## Lab 3. Bresenham's algorithm
+![Lab 3 work demonstration](images/lab03.gif)
