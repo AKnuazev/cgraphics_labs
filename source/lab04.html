@@ -1,0 +1,66 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="./css/workspace.css">
+</head>
+
+<body style="background: rgb(255, 255, 255);">
+    <h1>Lab 4. Sobel filter</h1>
+
+    <canvas width='500' height='500' id="canv1"> </canvas>
+    <input type="button" class="btn" id="btn_filter" value="GrayScale ON">
+
+    <script>
+        var image = new Image();
+        image.crossOrigin = "Anonymous";
+        image.src = 'https://thumbs.dreamstime.com/b/colorful-polygon-abstract-background-vector-40714508.jpg';
+
+        image.onload = function () {
+            var canvas = document.getElementById('canv1');
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+            function get_Gx(pixels, x, y) {
+                return (pixels[((y + 1) * canvas.width + x - 1) * 4] + 
+                (pixels[((y + 1) * canvas.width + x) * 4]) * 2 + 
+                pixels[((y + 1) * canvas.width + x + 1) * 4]) - 
+                (pixels[((y - 1) * canvas.width + x - 1) * 4] + 
+                (pixels[((y - 1) * canvas.width + x) * 4]) * 2 + 
+                pixels[((y - 1) * canvas.width + x + 1) * 4]);
+            }
+            function get_Gy(pixels, x, y) {
+                return (pixels[((y - 1) * canvas.width + x + 1) * 4] + 
+                (pixels[((y) * canvas.width + x + 1) * 4]) * 2 + 
+                pixels[((y + 1) * canvas.width + x + 1) * 4]) - 
+                (pixels[((y - 1) * canvas.width + x - 1) * 4] + 
+                (pixels[((y) * canvas.width + x - 1) * 4]) * 2 + 
+                pixels[((y + 1) * canvas.width + x - 1) * 4]);
+            }
+
+            function filter() {
+                var image_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let image_data2 = new ImageData(canvas.width,canvas.height);
+                var pixels = image_data.data;
+
+                for (var y = 1; y < canvas.height - 1; y++) {
+                    for (var x = 1; x < canvas.width - 1; x++) {
+                        var G = Math.ceil(Math.sqrt(Math.pow(get_Gx(pixels, x, y), 2) + Math.pow(get_Gy(pixels, x, y), 2 )));
+                        for (var i = 0; i < 3; i++)
+                            image_data2.data[(y*canvas.width+x)*4 + i] = G;
+                        image_data2.data[(y*canvas.width+x)*4 + 3] = 255;
+
+                    }
+                }
+                ctx.putImageData(image_data2, 0, 0);
+
+
+            };
+
+            var btn_filter = document.getElementById('btn_filter');
+            btn_filter.addEventListener('click', filter);
+        };
+    </script>
+
+</body>
+
+</html>

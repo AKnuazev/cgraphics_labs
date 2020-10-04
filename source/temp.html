@@ -1,0 +1,65 @@
+<html>
+    <body>
+        <canvas width="500" , height="300" , id="layer1"> </canvas>
+        <canvas width="500" , height="300" , id="layer2"> </canvas>
+        <script>
+            var canvas1 = document.getElementById("layer1");
+            var ctx1 = canvas1.getContext("2d");
+    
+            var canvas2 = document.getElementById("layer2");
+            var ctx2 = canvas2.getContext("2d");
+
+
+            let img = new Image();
+            img.crossOrigin = "anonymus";
+            img.src = "https://thumbs.dreamstime.com/b/colorful-polygon-abstract-background-vector-40714508.jpg"
+
+            let img_data = new ImageData(1,1);
+            let img_data2= new ImageData(canvas1.width,canvas1.height);
+
+            function get_x_matrix(data, x, y) {
+                return (data[((y + 1) * canvas1.width + x - 1) * 4] + 
+                (data[((y + 1) * canvas1.width + x) * 4]) * 2 + 
+                data[((y + 1) * canvas1.width + x + 1) * 4]) - 
+                (data[((y - 1) * canvas1.width + x - 1) * 4] + 
+                (data[((y - 1) * canvas1.width + x) * 4]) * 2 + 
+                data[((y - 1) * canvas1.width + x + 1) * 4]);
+            }
+            function get_y_matrix(data, x, y) {
+                return (data[((y - 1) * canvas1.width + x + 1) * 4] + 
+                (data[((y) * canvas1.width + x + 1) * 4]) * 2 + 
+                data[((y + 1) * canvas1.width + x + 1) * 4]) - 
+                (data[((y - 1) * canvas1.width + x - 1) * 4] + 
+                (data[((y) * canvas1.width + x - 1) * 4]) * 2 + 
+                data[((y + 1) * canvas1.width + x - 1) * 4]);
+            }
+            
+            img.onload = function () {
+			
+                ctx1.drawImage(img, 0, 0, canvas1.width, canvas1.height); 
+                img_data = ctx1.getImageData(0, 0, canvas1.width, canvas1.height);
+
+
+                for (let y = 1; y < canvas1.height - 1; y++) {
+                    for (let x = 1; x < canvas1.width-1 ; x++) {
+                        let G_x =  get_x_matrix(img_data.data, x, y);
+                                  
+                        let G_y = get_y_matrix(img_data.data, x, y);
+
+                        let G = Math.ceil(Math.sqrt(G_x*G_x + G_y*G_y));
+
+                        img_data2.data[(y*canvas1.width+x)*4] = G;
+                        img_data2.data[(y*canvas1.width+x)*4 + 1] = G;
+                        img_data2.data[(y*canvas1.width+x)*4 + 2] = G;
+                        img_data2.data[(y*canvas1.width+x)*4 + 3] = 255;
+							
+                    }
+                }
+
+                ctx2.putImageData(img_data2, 0, 0, 0, 0, canvas1.width, canvas1.height);
+
+
+            }
+        </script>
+    </body>
+</html>
