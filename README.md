@@ -11,4 +11,4 @@ BMSTU labs for Computer Graphics
 ![Lab 3 work demonstration](images/lab03.gif)
 
 ## Lab 4. Sobel filter
-![Lab 4 work demonstration](images/lab04.gif)
+![Lab 4 work demonstration](images/lab04_gif.gif)
