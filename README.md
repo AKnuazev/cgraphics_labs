@@ -12,3 +12,6 @@ BMSTU labs for Computer Graphics
 
 ## Lab 4. Sobel filter
 ![Lab 4 work demonstration](images/lab04_gif.gif)
+
+## Lab 5. Curus-Beck cut-off method
+![Lab 5 work demonstration](images/lab05_gif.gif)
