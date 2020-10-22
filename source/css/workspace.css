@@ -1,5 +1,5 @@
 body {
-    background: #ecf7fa;
+    /*background: #ecf7fa;*/
 }
 
 h1 {
@@ -7,6 +7,12 @@ h1 {
     font: 300% calibri;
     
     font-weight: 700;
+}
+h3 {
+    text-align: center;
+    font: 300% calibri;
+    
+    font-weight: 500;
 }
 
 canvas {
