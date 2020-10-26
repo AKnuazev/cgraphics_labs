@@ -1,0 +1,171 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="./css/workspace.css">
+</head>
+
+<body>
+    <h1>Lab 5. Curus-Beck cut-off method</h1>
+
+    <canvas width='1000' height='500' id="canv"> </canvas>
+
+    <h3 id="suggest">Select area (Press ENTER when done)</h3>
+
+    <script>
+        var flag = 1;
+        var state = 1;
+        // Array for polygon
+        var polyg_points = [];
+        var polyg_points_number = 0;
+
+        var x0 = 0;
+        var y0 = 0;
+        var canvas = document.getElementById('canv');
+        var suggest = document.getElementById('suggest');
+        var ctx = canvas.getContext('2d');
+
+        function draw_line(x0, y0, x1, y1) {
+            var x = x0;
+            var y = y0;
+            var move_x = 1;
+            var move_y = 1;
+
+            if (x0 > x1)
+                move_x = -1;
+            if (y0 > y1)
+                move_y = -1;
+
+            var dx = Math.abs(x1 - x0);
+            var dy = Math.abs(y1 - y0);
+            var E = dx - dy;
+
+            var pixels_number = 0;
+            if (dx > dy)
+                pixels_number = dx;
+            else
+                pixels_number = dy;
+
+            while (pixels_number > 0) {
+                pixels_number -= 1;
+                ctx.fillRect(x, y, 2, 2);
+                if (dy >= -2 * E) {
+                    x += move_x;
+                    E -= dy;
+                }
+                if (dx >= 2 * E) {
+                    y += move_y;
+                    E += dx;
+                }
+            }
+        }
+
+        class Pixel {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        canvas.addEventListener('click', (event) => {
+            if (state) {
+                if (flag) {
+                    if (event.offsetX > 0 && event.offsetX < canvas.width)
+                        if (event.offsetY > 0 && event.offsetY < canvas.height) {
+                            // Add to array
+                            polyg_points[polyg_points_number] = new Pixel(event.offsetX, event.offsetY);
+                            polyg_points_number++;
+
+                            // Draw
+                            x0 = event.offsetX;
+                            y0 = event.offsetY;
+                            ctx.fillRect(x0, y0, 4, 4);
+                            flag = 0;
+                        }
+                }
+                else {
+                    polyg_points[polyg_points_number] = new Pixel(event.offsetX, event.offsetY);
+                    polyg_points_number++;
+
+                    ctx.fillRect(event.offsetX, event.offsetY, 4, 4);
+                    draw_line(x0, y0, event.offsetX, event.offsetY);
+                    x0 = event.offsetX;
+                    y0 = event.offsetY;
+                }
+            }
+            else {
+                if (flag) {
+                    if (event.offsetX > 0 && event.offsetX < canvas.width)
+                        if (event.offsetY > 0 && event.offsetY < canvas.height) {
+                            x0 = event.offsetX;
+                            y0 = event.offsetY;
+                            ctx.fillRect(x0, y0, 4, 4);
+                            flag = 0;
+                        }
+                }
+                else {
+                    ctx.fillRect(event.offsetX, event.offsetY, 4, 4);
+                    draw_line(x0, y0, event.offsetX, event.offsetY);
+
+                    ax = x0
+                    ay = y0;
+                    bx = event.offsetX;
+                    by = event.offsetY;
+
+                    var p1x;
+                    var p1y;
+                    var p2x;
+                    var p2y;
+
+                    var t = ((p1y - p2y) * (ax - p1x) + (p2x - p1x) * (ay - p1y)) / ((bx - ax) * (p2y - p1y) + (by - ay) * (p1x - p2x));
+
+                    var crossings = []
+                    var cross_count = 0;
+                    // For all edges
+                    for (var point_num = 0; point_num < polyg_points_number; ++point_num) {
+                        p1x = polyg_points[point_num].x;
+                        p1y = polyg_points[point_num].y;
+                        p2x = polyg_points[(point_num + 1) % polyg_points_number].x;
+                        p2y = polyg_points[(point_num + 1) % polyg_points_number].y;
+
+                        t = ((p1y - p2y) * (ax - p1x) + (p2x - p1x) * (ay - p1y)) / ((bx - ax) * (p2y - p1y) + (by - ay) * (p1x - p2x))
+
+
+                        var ex;
+                        var ey;
+                        if (t <= 1 && t >= 0) {
+                            ex = (bx - ax) * t + ax;
+                            ey = (by - ay) * t + ay;
+
+                            crossings[cross_count] = new Pixel(ex, ey);
+                            cross_count += 1;
+                        }
+                    }
+
+                    if (cross_count == 2) {
+                        ctx.fillStyle = "#00ff00";
+                        draw_line(crossings[0].x, crossings[0].y, crossings[1].x, crossings[1].y);
+                        ctx.fillStyle = "#000000";
+                    }
+                    else if (cross_count == 1) {
+                        ctx.fillStyle = "#00ff00";
+                        draw_line(ex, ey, bx, by);
+                        ctx.fillStyle = "#000000";
+                    }
+
+                    flag = 1;
+                }
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (state == 1 && polyg_points_number > 1) {
+                suggest.textContent = "Now draw lines";
+                state = 0;
+                flag = 1;
+                draw_line(polyg_points[0].x, polyg_points[0].y, polyg_points[polyg_points_number - 1].x, polyg_points[polyg_points_number - 1].y); // Draw last line
+            }
+        });
+    </script>
+</body>
+
+</html>

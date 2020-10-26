@@ -15,3 +15,9 @@ BMSTU labs for Computer Graphics
 
 ## Lab 5. Curus-Beck cut-off method
 ![Lab 5 work demonstration](images/lab05_gif.gif)
+
+## Lab 6. Priming method
+![Lab 6 work demonstration](images/lab06_gif.gif)
+
+## Lab 7. Horizontal lines filling method 
+![Lab 7 work demonstration](images/lab07_gif.gif)

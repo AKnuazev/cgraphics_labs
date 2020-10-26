@@ -1,0 +1,176 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="./css/workspace.css">
+</head>
+
+<body>
+    <h1>Lab 6. Priming method</h1>
+
+    <canvas width='1000' height='500' id="canv"> </canvas>
+
+    <h3 id="suggest">Select area (Press ENTER when done)</h3>
+
+    <script>
+        var flag = 1;
+        var state = 1;
+        // Array for polygon
+        var polyg_points = [];
+        var polyg_points_number = 0;
+
+        var x0 = 0;
+        var y0 = 0;
+        var canvas = document.getElementById('canv');
+        var suggest = document.getElementById('suggest');
+
+        var ctx = canvas.getContext('2d');
+        function draw_line(x0, y0, x1, y1) {
+            var x = x0;
+            var y = y0;
+            var move_x = 1;
+            var move_y = 1;
+
+            if (x0 > x1)
+                move_x = -1;
+            if (y0 > y1)
+                move_y = -1;
+
+            var dx = Math.abs(x1 - x0);
+            var dy = Math.abs(y1 - y0);
+            var E = dx - dy;
+
+            var pixels_number = 0;
+            if (dx > dy)
+                pixels_number = dx;
+            else
+                pixels_number = dy;
+
+            while (pixels_number > 0) {
+                pixels_number -= 1;
+                ctx.fillRect(x, y, 2, 2);
+                if (dy >= -2 * E) {
+                    x += move_x;
+                    E -= dy;
+                }
+                if (dx >= 2 * E) {
+                    y += move_y;
+                    E += dx;
+                }
+            }
+        }
+
+        class Pixel {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+            }
+            get_neighbours() {
+                var neighbours = [];
+
+                neighbours[0] = new Pixel(this.x, this.y - 1);
+                neighbours[1] = new Pixel(this.x - 1, this.y);
+                neighbours[2] = new Pixel(this.x, this.y + 1);
+                neighbours[3] = new Pixel(this.x + 1, this.y);
+
+                return neighbours;
+            }
+        };
+
+        class Stack {
+            constructor() {
+                this._size = 0;
+                this._storage = {};
+            }
+            push(data) {
+                this._size++;
+                this._storage[this._size] = data;
+            };
+
+            pop() {
+                var pop_data;
+
+                if (this._size) {
+                    pop_data = this._storage[this._size];
+
+                    delete this._storage[this._size];
+                    this._size--;
+
+                    return pop_data;
+                }
+            };
+
+            not_empty() {
+                return this._size != 0;
+            }
+        }
+
+        function fillArea(x, y) {
+            ctx.fillStyle = "#ff8c00"; // Dark Orange Color
+
+            var stack = new Stack();
+            var curr_point = new Pixel(x, y);
+
+            stack.push(curr_point);
+
+            while (stack.not_empty()) {
+                curr_point = stack.pop();
+
+                if (ctx.getImageData(curr_point.x, curr_point.y, 1, 1).data[3] != 255) {
+
+                    ctx.fillRect(curr_point.x, curr_point.y, 1, 1);
+
+                    neighbours = curr_point.get_neighbours()
+                    neighbours.forEach(neib => {
+                        stack.push(neib);
+                    });
+
+                }
+            }
+
+        }
+
+
+        canvas.addEventListener('click', (event) => {
+            if (state) {
+                if (flag) {
+                    if (event.offsetX > 0 && event.offsetX < canvas.width)
+                        if (event.offsetY > 0 && event.offsetY < canvas.height) {
+                            // Add to array
+                            polyg_points[polyg_points_number] = new Pixel(event.offsetX, event.offsetY);
+                            polyg_points_number++;
+
+                            // Draw
+                            x0 = event.offsetX;
+                            y0 = event.offsetY;
+                            ctx.fillRect(x0, y0, 4, 4);
+                            flag = 0;
+                        }
+                }
+                else {
+                    polyg_points[polyg_points_number] = new Pixel(event.offsetX, event.offsetY);
+                    polyg_points_number++;
+
+                    ctx.fillRect(event.offsetX, event.offsetY, 4, 4);
+                    draw_line(x0, y0, event.offsetX, event.offsetY);
+                    x0 = event.offsetX;
+                    y0 = event.offsetY;
+                }
+            }
+            else {
+                suggest.textContent = "Done, area filled";
+                fillArea(event.offsetX, event.offsetY);
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (state == 1 && polyg_points_number > 1) {
+                suggest.textContent = "Now click into the figure to fill it";
+                state = 0;
+                flag = 1;
+                draw_line(polyg_points[0].x, polyg_points[0].y, polyg_points[polyg_points_number - 1].x, polyg_points[polyg_points_number - 1].y); // Draw last line
+            }
+        });
+    </script>
+</body>
+
+</html>
