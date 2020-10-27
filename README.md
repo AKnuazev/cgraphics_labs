@@ -23,4 +23,4 @@ BMSTU labs for Computer Graphics
 ![Lab 7 work demonstration](images/lab07_gif.gif)
 
 ## Lab 8. Shape using OBJ presets
-![Lab 8 work demonstration](images/lab08_img.gif)
+![Lab 8 work demonstration](images/lab08_img.png)
